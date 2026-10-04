@@ -1,0 +1,10 @@
+data
+outputs
+**/node_modules
+frontend/dist
+report
+notebooks
+models
+experiment-tracking
+**/__pycache__
+.git

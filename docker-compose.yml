@@ -1,0 +1,35 @@
+# One command:  docker compose up --build
+#   App (React UI)        -> http://localhost:3000
+#   API docs (FastAPI)    -> http://localhost:8000/docs
+#   MLflow tracking UI    -> http://localhost:5000
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      MODELS_DIR: /models
+      # ONNX models are downloaded once into ./models if they are not already there
+      MODELS_URL: ${MODELS_URL:-https://github.com/maima2024/GenAI-Assignment1/releases/download/v1.0/onnx_models.zip}
+    volumes:
+      - ./models:/models
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+  mlflow:
+    build: ./experiment-tracking
+    volumes:
+      - ./experiment-tracking/mlruns:/mlruns
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
