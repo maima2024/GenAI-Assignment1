@@ -1,0 +1,14 @@
+# Training / evaluation (Kaggle & Colab already provide torch, torchvision, numpy, sklearn, matplotlib, opencv)
+torch>=2.1
+torchvision>=0.16
+numpy
+opencv-python-headless
+pillow
+scikit-learn
+matplotlib
+pandas
+optuna>=3.5
+mlflow>=2.12
+onnx>=1.15
+onnxruntime>=1.17
+onnxscript
