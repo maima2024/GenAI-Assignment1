@@ -5,7 +5,7 @@ import numpy as np
 
 def psnr(a: np.ndarray, b: np.ndarray) -> float:
     mse = np.mean((a.astype(np.float64) - b.astype(np.float64)) ** 2)
-    return float("inf") if mse == 0 else float(10 * np.log10(255.0 ** 2 / mse))
+    return 100.0 if mse == 0 else float(10 * np.log10(255.0 ** 2 / mse))
 
 
 def ssim(a: np.ndarray, b: np.ndarray) -> float:

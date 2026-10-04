@@ -34,7 +34,7 @@ export default function RestorationWorkspace({ mode }) {
   }
 
   const m = res?.metrics, im = res?.input_metrics;
-  const fmt = (v, d = 2) => (v === undefined || v === null ? "—" : !isFinite(v) ? "∞" : v.toFixed(d));
+  const fmt = (v, d = 2) => (v === undefined || v === null ? "—" : !isFinite(v) || v >= 99.99 ? "∞" : v.toFixed(d));
 
   return (
     <div className="grid gap-6 xl:grid-cols-[340px_1fr]">

@@ -31,10 +31,10 @@ docker compose up --build
 | FastAPI interactive docs | http://localhost:8000/docs |
 | MLflow experiment tracking UI | http://localhost:5000 |
 
-**Model files.** On first start the backend downloads `onnx_models.zip` from the
+**Model files.** On first start the backend downloads the seven `.onnx` files from the
 [v1.0 GitHub release](https://github.com/maima2024/GenAI-Assignment1/releases/tag/v1.0) into `./models/`
-(≈ 150–250 MB, one time). To do it manually instead: download the zip from the release page, extract the
-`.onnx` files into `models/`, then run `docker compose up --build`. The *System Status* page in the app shows
+(≈ 240 MB, one time only). To do it manually instead: download the `.onnx` assets from the release page into
+`models/`, then run `docker compose up --build`. The *System Status* page in the app shows
 which models are loaded.
 
 Stop with `Ctrl+C` / `docker compose down`.

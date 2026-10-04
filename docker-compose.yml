@@ -10,7 +10,7 @@ services:
     environment:
       MODELS_DIR: /models
       # ONNX models are downloaded once into ./models if they are not already there
-      MODELS_URL: ${MODELS_URL:-https://github.com/maima2024/GenAI-Assignment1/releases/download/v1.0/onnx_models.zip}
+      MODELS_URL: ${MODELS_URL:-https://github.com/maima2024/GenAI-Assignment1/releases/download/v1.0}
     volumes:
       - ./models:/models
     ports:

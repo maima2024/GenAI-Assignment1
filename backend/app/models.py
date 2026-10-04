@@ -1,5 +1,6 @@
 """ONNX model registry. Models are read from MODELS_DIR; if missing they are downloaded once
-from MODELS_URL (a zip of the onnx/ folder attached to the GitHub release)."""
+from MODELS_URL: either a GitHub release download base (each <name>.onnx is fetched)
+or a .zip containing the .onnx files."""
 from __future__ import annotations
 
 import io
@@ -23,15 +24,22 @@ def ensure_models():
         return
     print(f"Downloading models ({len(missing)} missing) from {MODELS_URL}", flush=True)
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    try:
-        with urllib.request.urlopen(MODELS_URL, timeout=600) as r:
-            data = r.read()
-        with zipfile.ZipFile(io.BytesIO(data)) as z:
-            for m in z.namelist():
-                if m.endswith(".onnx"):
-                    (MODELS_DIR / Path(m).name).write_bytes(z.read(m))
-    except Exception as e:  # keep serving; /api/health reports what is missing
-        print("Model download failed:", e, flush=True)
+    for n in missing:
+        try:
+            if MODELS_URL.endswith(".zip"):
+                with urllib.request.urlopen(MODELS_URL, timeout=900) as r:
+                    with zipfile.ZipFile(io.BytesIO(r.read())) as z:
+                        for m in z.namelist():
+                            if m.endswith(".onnx"):
+                                (MODELS_DIR / Path(m).name).write_bytes(z.read(m))
+                break
+            url = f"{MODELS_URL.rstrip('/')}/{n}.onnx"
+            print("  ->", url, flush=True)
+            tmp = MODELS_DIR / f"{n}.onnx.part"
+            urllib.request.urlretrieve(url, tmp)
+            tmp.rename(MODELS_DIR / f"{n}.onnx")
+        except Exception as e:  # keep serving; /api/health reports what is missing
+            print(f"Model download failed for {n}:", e, flush=True)
 
 
 class Registry:

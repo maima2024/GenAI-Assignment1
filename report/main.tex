@@ -23,7 +23,7 @@ Code: \repo\\ Demo video: \url{https://youtu.be/VIDEO_ID}}}
 \maketitle
 
 \begin{abstract}
-We design, train, evaluate and deploy four related generative systems. Tasks~1--3 restore $128{\times}128$ Oxford-IIIT Pet images degraded at run time by salt-and-pepper noise, Gaussian blur or rectangular occlusion: (1)~a single universal denoising autoencoder (UDAE) with a genuine spatial bottleneck, (2)~a CNN corruption classifier that hard-routes inputs to one of three independently trained specialist autoencoders (or an identity bypass), and (3)~a jointly fine-tuned soft mixture-of-experts (MoE) whose gate, initialised from the Task-2 classifier, blends all branches. Task~4 is a style-conditioned pix2pix-type conditional GAN that turns FS2K face photographs into sketches in one of three styles through a learned style embedding. Every model is tuned with Optuna, tracked with MLflow, exported to ONNX (with numerical PyTorch/ONNX agreement verified) and served through a FastAPI backend and a React/Tailwind front end orchestrated by Docker Compose. We report per-corruption and per-severity results, oracle vs.\ predicted routing, gate behaviour and failure cases, and discuss what each experiment taught us.
+We design, train, evaluate and deploy four related generative systems. Tasks~1--3 restore $128{\times}128$ Oxford-IIIT Pet images degraded at run time by salt-and-pepper noise, Gaussian blur or rectangular occlusion: (1)~a single universal denoising autoencoder (UDAE) with a genuine spatial bottleneck, (2)~a CNN corruption classifier that hard-routes inputs to one of three independently trained specialist autoencoders (or an identity bypass), and (3)~a jointly fine-tuned soft mixture-of-experts (MoE) whose gate, initialised from the Task-2 classifier, blends all branches. Task~4 is a style-conditioned pix2pix-type conditional GAN that turns FS2K face photographs into sketches in one of three styles through a learned style embedding. Every model is tuned with Optuna, tracked with MLflow, exported to ONNX (with numerical PyTorch/ONNX agreement verified) and served through a FastAPI backend and a React/Tailwind front end orchestrated by Docker Compose. On 36,690 deterministic test inputs, the soft MoE performs best (23.9\,dB / 0.786 SSIM averaged over corruptions, vs.\ 23.2\,dB / 0.705 for the UDAE and 22.8\,dB / 0.724 for hard routing), because its gate learns, without severity labels, to blend the identity branch with the matching expert according to corruption strength. The classifier reaches 99.7\% accuracy, and the cGAN reaches 0.55 SSIM on the FS2K test set, producing clearly style-dependent sketches. We report per-corruption and per-severity results, oracle vs.\ predicted routing, gate behaviour and failure cases.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -96,6 +96,8 @@ $\mathcal{L}_{UDAE}=\alpha\,\mathcal{L}_1(x,\hat x)+(1-\alpha)(1-\mathrm{SSIM}(x
 \subsection{Optuna search}
 Search space: learning rate $[10^{-4},3{\cdot}10^{-3}]$ (log), batch size $\{16,32,64\}$, latent channels $L\in\{16,32,64,128\}$, base channels $C\in\{16,32,48\}$, dropout $[0,0.3]$ and $\alpha\in[0.5,0.95]$. A key design decision is that the \emph{objective is independent of $\alpha$}: we minimise validation $\mathcal{L}_1+(1-\mathrm{SSIM})$. Optimising the training loss itself would reward the trivial choice of whichever $\alpha$ makes the loss numerically smallest. Trials are pruned with the median pruner. Table~\ref{tab:optuna} lists all studies; Fig.~\ref{fig:t1optuna} shows the history and fANOVA parameter importance.
 
+\inputif{optuna.tex}
+
 \begin{figure}[t]\centering
 \figif{task1_task1_optuna.png}
 \caption{Task 1 Optuna optimisation history and hyper-parameter importance.}\label{fig:t1optuna}
@@ -119,8 +121,12 @@ Search space: learning rate $[10^{-4},3{\cdot}10^{-3}]$ (log), batch size $\{16,
 \caption{Task 1 failure cases: for each condition the test input with the smallest SSIM gain.}\label{fig:t1fail}
 \end{figure}
 
-%RESULTS-T1
-\textit{Discussion pending final numbers.}
+\textbf{Search outcome.} The study ran 12 trials (9 complete, 3 pruned). The best trial (objective 0.479) chose the \emph{smallest} bottleneck, $L{=}16$ (a $16{\times}8{\times}8$ = 1,024-value code, $48{\times}$ compression), wide encoder channels ($C{=}48$), batch size 16, learning rate $1.9{\cdot}10^{-4}$, almost no dropout (0.002) and $\alpha{=}0.73$, i.e.\ noticeably more SSIM weight than the suggested 0.8. We interpret the small bottleneck as a regulariser: a tighter code cannot represent impulse noise or rectangle edges, so it filters them out. A caveat is that trials lasted only four epochs, which favours configurations that converge quickly (Sec.~\ref{sec:limits}). The final 25-epoch run (Fig.~\ref{fig:t1curves}) raised validation PSNR from 18.8 to 23.5\,dB without signs of over-fitting.
+
+\textbf{Quantitative results.} Averaged over the three corruptions, the UDAE improves the input from 19.26\,dB / 0.661 SSIM to 23.16\,dB / 0.705 (Table~\ref{tab:t1}). The picture differs sharply per corruption. \emph{Salt-and-pepper} is removed almost completely (16.4$\to$24.1\,dB, SSIM 0.41$\to$0.72), and output quality is nearly independent of severity (24.2/24.2/23.9\,dB), confirming that the network has learned to ignore isolated extreme pixels. \emph{Occlusion} gains 7.5\,dB PSNR (13.6$\to$21.1\,dB) because the black holes are filled with plausible colours, yet SSIM \emph{decreases} (0.744$\to$0.667): SSIM of an occluded image is high because 65--90\% of it is untouched, and the autoencoder blurs those regions too. For \emph{blur} and \emph{clean} inputs the model is worse than doing nothing (blur 27.9$\to$24.3\,dB; clean images are reproduced at only 24.2\,dB / 0.737). This is the central limitation of a single bottlenecked network: every input, whatever its condition, is projected through the same lossy code, which caps fidelity at roughly 24\,dB. Fig.~\ref{fig:t1ex} shows this clearly: noise disappears and holes are filled, but fur and background texture are smoothed, and the error maps concentrate on edges.
+
+\textbf{Failure cases} (Fig.~\ref{fig:t1fail}) are (i) highly textured clean images, where the bottleneck destroys fine detail; (ii) large occlusions covering the animal's face, filled with a featureless blur; (iii) images with thin bright structures, which salt-and-pepper removal erases along with the noise; and (iv) strong blur, which is not sharpened. The results motivated Task~2: if the corruption type is known, clean inputs need not be degraded at all.
+
 
 %=====================================================================
 \section{Task 2: Classification and Hard-Routed Specialists}
@@ -152,8 +158,12 @@ $r=\arg\max_k p_k$; $r{=}$clean uses an identity bypass (no network is executed)
 \caption{Restoration failures caused by classifier errors: oracle-routed vs.\ predicted-routed outputs for the test inputs with the largest PSNR loss.}\label{fig:misroute}
 \end{figure*}
 
-%RESULTS-T2
-\textit{Discussion pending final numbers.}
+\textbf{Classifier.} The classifier study (10 trials, 5 pruned; best $1-$F1 = 0.0095) selected the 24-48-96-192 channel configuration, batch size 32, learning rate $4.3{\cdot}10^{-4}$, dropout 0.30 and weight decay $6.8{\cdot}10^{-4}$. After 12 epochs it reaches 99.69\% accuracy and 0.9949 macro-F1 on the 36,690 test inputs (99.59\% on validation), with no sign of bias towards any class (Table~\ref{tab:clf}). The confusion matrix (Fig.~\ref{fig:cm}) and Table~\ref{tab:clfsev} show that almost all errors lie on the clean/corrupted boundary: 1.4\% of clean images are called \emph{blur} (images that are slightly out of focus in the original photo look like mild blur), and 1.4\% of \emph{low}-severity occlusions (a single rectangle covering $\approx$10\%) are called \emph{clean}, typically when the rectangle lands on an already dark region. Salt-and-pepper and medium/high blur are recognised perfectly. The misclassified inputs are exactly the cases the brief describes as ``near the boundary between two classes''.
+
+\textbf{Specialists and routing.} The shared specialist study (10 trials) again selected $L{=}16$ and $C{=}48$, with a higher learning rate ($1.3{\cdot}10^{-3}$) and an almost equal L1/SSIM weighting ($\alpha{=}0.51$). Under oracle routing (Table~\ref{tab:routing}) the specialists reach 23.79\,dB / 0.751 on salt-and-pepper, 23.77\,dB / 0.743 on blur and 20.87\,dB / 0.677 on occlusion. Compared with the universal model they trade about 0.2--0.5\,dB PSNR for a consistent +0.01 to +0.03 SSIM gain, i.e.\ specialisation mainly improves structure rather than pixel error at this capacity. The largest advantage of routing is the identity bypass: clean images are returned untouched (infinite PSNR, SSIM 1) instead of being degraded to 24.2\,dB by the universal model.
+
+\textbf{Oracle vs.\ predicted.} Because the classifier is so accurate, predicted routing is almost indistinguishable from oracle routing: 114 of 36,690 inputs (0.31\%) are misrouted (Table~\ref{tab:misroute}). The two error types behave very differently. \emph{Clean$\to$blur} errors (51 cases) are genuine failures: a perfect input is sent through the blur expert and comes back at $\approx$25\,dB (the large ``drop'' in Table~\ref{tab:misroute} is relative to the 100\,dB cap used for identical images). \emph{Occlusion$\to$clean} errors (53 cases), however, \emph{improve} PSNR by 2.3\,dB on average: for a small rectangle the untouched image is closer to the target than the occlusion expert's blurred reconstruction. Fig.~\ref{fig:misroute} shows both effects. This is an important finding. Hard routing is optimal only if every expert beats the identity on its own corruption, which is false for mild corruptions with our bottlenecked experts. A system that can \emph{blend} the identity with an expert should do better, which is what Task~3 tests.
+
 
 %=====================================================================
 \section{Task 3: Jointly Trained Soft Mixture of Experts}
@@ -198,8 +208,14 @@ $\hat x = w_0\tilde x+w_1A_{salt}(\tilde x)+w_2A_{blur}(\tilde x)+w_3A_{occ}(\ti
 \caption{Task 3 training: warm-up epochs followed by joint fine-tuning.}\label{fig:t3curves}
 \end{figure}
 
-%RESULTS-T3
-\textit{Discussion pending final numbers.}
+\textbf{Search and training.} Eight trials were run (one pruned by the collapse/median rule). The best configuration differs from the defaults in an informative way: a \emph{higher} temperature $\tau{=}2.19$ (softer weights), a much smaller classification weight $\lambda_c{=}0.020$ (vs.\ 0.1), a larger balance weight $\lambda_b{=}0.049$, $\lambda_1{=}0.57$ and joint learning rate $1.35{\cdot}10^{-4}$. In other words, the reconstruction objective preferred a gate that is \emph{less} tied to the hard corruption label. Starting from the initialised but untrained MoE (validation objective 0.2425), the gate-only warm-up reduced the objective to 0.209 and joint fine-tuning to 0.196, a 19\% improvement overall (Fig.~\ref{fig:t3curves}). Meanwhile the gate's arg-max accuracy fell from 99.6\% to $\approx$94\%. This is not a defect: the gate stopped acting as a classifier and started acting as a blender.
+
+\textbf{Reconstruction.} The soft MoE is the best of the three systems (Table~\ref{tab:compare}): 23.94\,dB / 0.786 averaged over corruptions, against 23.16\,dB / 0.705 (UDAE) and 22.81\,dB / 0.724 (hard routing), while keeping clean images at 46.2\,dB / 0.997. The gains are largest at \emph{low} severity: low blur reaches 27.35\,dB vs.\ 23.69\,dB for hard routing, and low occlusion reaches SSIM 0.871 vs.\ 0.710. These are exactly the inputs that hard routing handled worst.
+
+\textbf{Gate behaviour.} The heat-map (Fig.~\ref{fig:heat}) explains why. Salt-and-pepper inputs go almost entirely to their expert (0.80/0.90/0.92 for low/medium/high). For blur and occlusion the gate learned a \emph{severity-dependent mixture of identity and expert}, although severity was never given as a label: the identity weight falls from 0.45 to 0.29 to 0.25 for low/medium/high blur, and from 0.51 to 0.37 to 0.23 for occlusion, while the expert weight rises correspondingly. For a lightly blurred image the output is essentially the average of the sharp-but-blurred input and the deblurred-but-smooth expert output, which beats both. Table~\ref{tab:usage} shows that no branch is inactive (arg-max shares 0.20/0.29/0.27/0.23) and that no expert dominates unrelated inputs: the S\&P, blur and occlusion experts receive on average only 0.001, 0.025 and 0.024 weight on inputs of other types. Only the identity branch receives substantial off-target weight (0.26), which is the intended blending behaviour. A quarter of the inputs (25.6\%) are dominated by one branch ($w>0.9$) and 20\% are clearly distributed ($\max w<0.6$); Fig.~\ref{fig:t3dist} (left) shows examples of both.
+
+\textbf{Compound corruptions.} On blur+S\&P and S\&P+occlusion inputs, which never appear in training, the gate does \emph{not} split weight evenly. The S\&P expert receives 0.80--0.95 (Fig.~\ref{fig:t3dist}, right). Blur+S\&P still improves strongly (e.g.\ 15.4$\to$27.9\,dB) because the S\&P expert also smooths, but occlusions in S\&P+occlusion inputs remain largely unfilled (14.4$\to$18.0\,dB). The gate therefore detects the most salient corruption rather than composing experts. Learning genuine composition would require compound corruptions during training.
+
 
 \inputif{compare.tex}
 
@@ -241,8 +257,14 @@ $\mathcal{L}_D=\mathrm{BCE}(D(x,y,s),0.9)+\mathrm{BCE}(D(x,G(x,s),s),0)$ (one-si
 \caption{Left: the same test photograph rendered in all three styles (ground-truth style shown in column 2). Right: best and worst test samples by SSIM.}\label{fig:t4swap}
 \end{figure*}
 
-%RESULTS-T4
-\textit{Discussion pending final numbers.}
+\textbf{Search outcome.} Ten six-epoch trials were run (5 pruned); the first trial used the pix2pix defaults. The best configuration uses $C{=}32$ base channels (10.6\,M generator parameters, 42\,MB ONNX), batch size 16, $\mathrm{lr}_G{=}4.2{\cdot}10^{-4}$, $\mathrm{lr}_D{=}2.3{\cdot}10^{-4}$, dropout 0.22, a 32-dimensional style embedding and $\lambda_{L1}{=}87.5$, close to the value of 100 commonly used in pix2pix. A slower discriminator than generator appears to be preferred because $D$ otherwise wins quickly on this small dataset (899 training pairs).
+
+\textbf{Training dynamics.} Over 80 epochs (Fig.~\ref{fig:t4curves}) the discriminator's real loss fell from 0.88 to $\approx$0.6 and its fake loss from 0.70 to $\approx$0.37, while the generator's adversarial loss settled at 1.3--1.5. Neither network collapsed: $D$'s fake loss never approached zero, and the adversarial term stayed bounded. The L1 term fell from 0.30 to 0.175 and validation SSIM rose from 0.46 to $\approx$0.55. The fixed validation grids (Fig.~\ref{fig:t4evo}) show the generator moving from blurry face silhouettes to recognisable hair outlines, eyes and mouths.
+
+\textbf{Test results.} On the 1,046 official test pairs the generator reaches L1 0.102, SSIM 0.549 and PSNR 16.1\,dB (Table~\ref{tab:gan}). Style~1 (light pencil, $n{=}619$) and Style~3 ($n{=}46$) are reproduced best (SSIM 0.59 and 0.67). Style~2 (dense dark hatching, $n{=}381$) is hardest (SSIM 0.46): its high-contrast strokes are drawn at artist-specific positions that a pixel-aligned model cannot predict, so the generator outputs an average shading that L1 and SSIM both penalise. Note also that the test split is strongly imbalanced across styles (619/381/46), unlike the balanced training split (303/298/298), so the overall figure is dominated by Styles~1 and~2.
+
+\textbf{Is the style condition used?} Fig.~\ref{fig:t4swap} (left) renders the same test photograph in all three styles. Style~1 produces thin, light outlines; Style~2 adds dark shading in hair and around the eyes; Style~3 is in between. The embedding therefore changes the output substantially, as required, rather than acting only as an interface label. The worst test cases (Fig.~\ref{fig:t4swap}, right) are Style-2 sketches with heavy hatching, faces at unusual angles, and photos whose background has a colour similar to the hair.
+
 
 %=====================================================================
 \section{Experiment Tracking, Export and Deployment}
@@ -275,17 +297,17 @@ $\mathcal{L}_D=\mathrm{BCE}(D(x,y,s),0.9)+\mathrm{BCE}(D(x,G(x,s),s),0)$ (one-si
 %=====================================================================
 \section{Limitations}\label{sec:limits}
 \begin{itemize}
-\item \textbf{Compute.} All training ran on free Kaggle/Colab GPUs on the day of submission, so Optuna studies used 8--12 trials with short schedules; larger searches and longer training would likely improve all results, particularly the GAN.
+\item \textbf{Compute.} All training ran on free Kaggle/Colab GPUs on the day of submission, so Optuna studies used 8--12 trials with short schedules (4--6 epochs per trial), which biases selection towards fast-converging configurations (e.g.\ the smallest bottleneck); larger searches and longer training would likely improve all results, particularly the GAN.
 \item \textbf{Bottleneck vs.\ sharpness.} Without skip connections, fine textures (fur) must pass through an $8{\times}8$ code; outputs are smoother than the targets. This is the intended price of the autoencoder requirement.
 \item \textbf{Inpainting.} Large occlusions require hallucinating content; L1/SSIM-trained models produce plausible but blurry fills. An adversarial or perceptual term would help.
 \item \textbf{GAN evaluation.} Pixel metrics (L1/SSIM) do not fully capture sketch quality and bias the selection towards large $\lambda_{L1}$; FID/LPIPS were not computed for time reasons.
-\item \textbf{Single corruptions.} Training never contains compound corruptions; Fig.~\ref{fig:t3dist} probes them only qualitatively.
+\item \textbf{Single corruptions.} Training never contains compound corruptions; the MoE gate then selects the most salient corruption instead of composing experts (Fig.~\ref{fig:t3dist}).
 \end{itemize}
 
 %=====================================================================
 \section{Conclusion}
-%CONCLUSION
-\textit{Conclusion pending final numbers.}
+Under identical data and test conditions, the three restoration designs behave very differently. A single bottlenecked autoencoder removes impulse noise and fills holes, but it degrades every input to about 24\,dB, including clean and mildly blurred images. Hard routing with a 99.7\%-accurate classifier keeps clean images untouched and improves structural similarity, but it inherits the experts' fidelity ceiling, and its rare errors cost the most on clean images. The jointly trained soft MoE performed best (23.9\,dB / 0.786 SSIM on corrupted inputs, 46\,dB on clean ones) because, without any severity supervision, its gate learned to blend the identity branch with the expert in proportion to how strongly the image is corrupted. The main open problems are the bottleneck's fidelity ceiling and composing experts for compound corruptions. For face-to-sketch generation, a style-embedding pix2pix cGAN produces clearly style-dependent sketches (test SSIM 0.55), with dense-hatching Style~2 the hardest case. All models run in a single containerised application with verified ONNX inference and complete MLflow experiment records.
+
 
 %=====================================================================
 \appendices

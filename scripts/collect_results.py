@@ -74,6 +74,9 @@ def figures():
     s = sorted((OUT / "task4" / "samples").glob("*.png"))
     for f in s:
         shutil.copy2(f, FIG / f"task4_{f.name}")
+    if s:
+        shutil.copy2(s[len(s) // 2], FIG / "task4_samples_mid.png")
+        shutil.copy2(s[-1], FIG / "task4_samples_last.png")
 
 
 def write(name, body):
@@ -165,6 +168,18 @@ def routing_table(r):
     return "\n".join(lines)
 
 
+def cavg(b, pre=""):
+    ks = ["saltpepper", "blur", "occlusion"]
+    p = sum(b[k][pre + "psnr"] for k in ks) / 3
+    q = sum(b[k][pre + "ssim"] for k in ks) / 3
+    return f"{p:.2f} / {q:.3f}"
+
+
+def sev(s, pre=""):
+    b = s["by_kind_severity"]
+    return " / ".join(f"{b[f'all/{x}'][pre + 'psnr']:.2f}" for x in ["low", "medium", "high"])
+
+
 def comparison_table():
     t1 = lj("task1/test_results.json")
     r2 = lj("task2/routing_results.json")
@@ -175,15 +190,15 @@ def comparison_table():
     if t3: rows.append(("T3 soft MoE", t3["summary"]))
     if not rows:
         return ""
-    lines = [r"\begin{table*}[t]\centering\caption{Cross-task comparison on the identical deterministic test manifest (PSNR dB / SSIM).}\label{tab:compare}",
-             r"\begin{tabular}{lccccc}\toprule System & Clean & Salt \& pepper & Blur & Occlusion & All\\\midrule"]
+    lines = [r"\begin{table*}[t]\centering\caption{Cross-task comparison on the identical deterministic test manifest (PSNR dB / SSIM). PSNR of an output identical to the target is capped at 100 dB (shown as $\infty$); averages that include such values are therefore not meaningful, so the corrupted-input average excludes the clean condition.}\label{tab:compare}",
+             r"\begin{tabular}{lcccccc}\toprule System & Clean & Salt \& pepper & Blur & Occlusion & Corrupted avg. & Low / Med / High PSNR\\\midrule"]
     base = rows[0][1]["by_kind"]
     lines.append("Corrupted input & " + " & ".join(
-        (f"{f2(base[k]['in_psnr'])} / {f2(base[k]['in_ssim'], 3)}") for k in ["clean", "saltpepper", "blur", "occlusion"]) + r" & -- \\")
+        (f"{f2(base[k]['in_psnr'])} / {f2(base[k]['in_ssim'], 3)}") for k in ["clean", "saltpepper", "blur", "occlusion"]) + " & " + cavg(base, "in_") + " & " + sev(rows[0][1], "in_") + r" \\")
     for n, s in rows:
         b = s["by_kind"]
         lines.append(n + " & " + " & ".join(f"{f2(b[k]['psnr'])} / {f2(b[k]['ssim'], 3)}" for k in ["clean", "saltpepper", "blur", "occlusion"])
-                     + f" & {f2(s['overall']['psnr'])} / {f2(s['overall']['ssim'], 3)}\\\\")
+                     + " & " + cavg(b) + " & " + sev(s) + r"\\")
     lines += [r"\bottomrule\end{tabular}\end{table*}"]
     return "\n".join(lines)
 
@@ -196,8 +211,8 @@ def moe_tables(t3):
     lines.append("Mean weight & " + " & ".join(f"{u['mean_weight'][k]:.3f}" for k in order) + r"\\")
     lines.append("Argmax share & " + " & ".join(f"{u['argmax_share'][k]:.3f}" for k in order) + r"\\")
     lines.append("Off-target weight & " + " & ".join(f"{u['off_target_weight'][k]:.3f}" for k in order) + r"\\")
-    lines += [r"\bottomrule\end{tabular}", r"\vspace{2pt}\\\footnotesize Mean entropy " + f"{u['mean_entropy']:.3f} (max {u['max_entropy']:.3f}); "
-              f"{100 * u['frac_dominated_gt_0.9']:.1f}\\% of inputs have $\\max_k w_k>0.9$, {100 * u['frac_distributed_max_lt_0.6']:.1f}\\% have $\\max_k w_k<0.6$.",
+    lines += [r"\bottomrule\end{tabular}", r"\par\vspace{2pt}{\footnotesize Mean entropy " + f"{u['mean_entropy']:.3f} (max {u['max_entropy']:.3f}); "
+              f"{100 * u['frac_dominated_gt_0.9']:.1f}\\% of inputs have $\\max_k w_k>0.9$, {100 * u['frac_distributed_max_lt_0.6']:.1f}\\% have $\\max_k w_k<0.6$.}}",
               r"\end{table}"]
     return "\n".join(lines)
 
