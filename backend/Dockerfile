@@ -9,5 +9,5 @@ COPY backend/app ./app
 # single source of truth for corruption definitions (same file used in training)
 COPY src/genai/corruptions.py ./app/corruptions.py
 EXPOSE 8000
-HEALTHCHECK --interval=15s --timeout=5s --start-period=60s --retries=5 CMD curl -fs http://localhost:8000/api/health || exit 1
+HEALTHCHECK --interval=15s --timeout=5s --start-period=600s --retries=10 CMD curl -fs http://localhost:8000/api/health || exit 1
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
