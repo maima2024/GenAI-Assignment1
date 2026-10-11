@@ -18,3 +18,5 @@ report/*.out
 report/*.bbl
 report/*.blg
 .env
+report/main.fdb_latexmk
+report/*.fls
