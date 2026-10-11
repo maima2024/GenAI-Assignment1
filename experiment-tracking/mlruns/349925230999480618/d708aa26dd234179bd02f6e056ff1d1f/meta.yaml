@@ -1,0 +1,14 @@
+artifact_uri: file:///mlruns/349925230999480618/d708aa26dd234179bd02f6e056ff1d1f/artifacts
+end_time: 1791115993326
+entry_point_name: ''
+experiment_id: '349925230999480618'
+lifecycle_stage: active
+run_id: d708aa26dd234179bd02f6e056ff1d1f
+run_name: spec_optuna_search
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791115525856
+status: 3
+tags: []
+user_id: root

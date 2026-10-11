@@ -1,0 +1,8 @@
+\begin{table*}[t]\centering\caption{Cross-task comparison on the identical deterministic test manifest (PSNR dB / SSIM). PSNR of an output identical to the target is capped at 100 dB (shown as $\infty$); averages that include such values are therefore not meaningful, so the corrupted-input average excludes the clean condition.}\label{tab:compare}
+\begin{tabular}{lcccccc}\toprule System & Clean & Salt \& pepper & Blur & Occlusion & Corrupted avg. & Low / Med / High PSNR\\\midrule
+Corrupted input & $\infty$ / 1.000 & 16.38 / 0.412 & 27.85 / 0.828 & 13.55 / 0.744 & 19.26 / 0.661 & 23.06 / 18.65 / 16.09 \\
+T1 universal DAE & 24.21 / 0.737 & 24.09 / 0.725 & 24.28 / 0.724 & 21.10 / 0.667 & 23.16 / 0.705 & 23.69 / 23.28 / 22.50\\
+T2 hard (oracle) & $\infty$ / 1.000 & 23.79 / 0.751 & 23.77 / 0.743 & 20.87 / 0.677 & 22.81 / 0.724 & 23.17 / 22.89 / 22.36\\
+T2 hard (predicted) & 98.92 / 0.997 & 23.79 / 0.751 & 23.77 / 0.743 & 20.88 / 0.678 & 22.81 / 0.724 & 23.18 / 22.89 / 22.36\\
+T3 soft MoE & 46.19 / 0.997 & 24.69 / 0.777 & 25.79 / 0.802 & 21.34 / 0.780 & 23.94 / 0.786 & 25.12 / 23.82 / 22.88\\
+\bottomrule\end{tabular}\end{table*}

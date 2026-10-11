@@ -1,0 +1,18 @@
+{
+  "n_trials": 10,
+  "states": {
+    "COMPLETE": 5,
+    "PRUNED": 5
+  },
+  "best_value": 0.5602375790476799,
+  "best_params": {
+    "lr_g": 0.0004180690155717535,
+    "lr_d": 0.00023190092212521353,
+    "batch_size": 16,
+    "base": 32,
+    "dropout": 0.22193706304171323,
+    "emb_dim": 32,
+    "lambda_l1": 87.49068397700962
+  },
+  "best_trial": 5
+}

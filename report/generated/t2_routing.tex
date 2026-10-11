@@ -1,0 +1,24 @@
+\begin{table}[t]\centering\caption{Hard routing: oracle vs.\ predicted routing (test PSNR/SSIM). 114 of 36690 test inputs were misrouted.}\label{tab:routing}
+\setlength{\tabcolsep}{3.5pt}\begin{tabular}{llcccc}\toprule
+& & \multicolumn{2}{c}{Oracle} & \multicolumn{2}{c}{Predicted}\\ Cond. & Sev. & PSNR & SSIM & PSNR & SSIM\\\midrule
+Clean & -- & $\infty$ & 1.000 & 98.92 & 0.997\\
+S\&P & low & 23.80 & 0.752 & 23.80 & 0.752\\
+S\&P & medium & 23.79 & 0.752 & 23.79 & 0.752\\
+S\&P & high & 23.78 & 0.749 & 23.78 & 0.749\\
+Blur & low & 23.69 & 0.749 & 23.70 & 0.749\\
+Blur & medium & 23.89 & 0.748 & 23.89 & 0.748\\
+Blur & high & 23.72 & 0.731 & 23.72 & 0.731\\
+Occl. & low & 22.02 & 0.710 & 22.05 & 0.713\\
+Occl. & medium & 20.99 & 0.683 & 21.00 & 0.683\\
+Occl. & high & 19.58 & 0.638 & 19.58 & 0.638\\
+\midrule All & & 30.53 & 0.751 & 30.42 & 0.751\\
+\bottomrule\end{tabular}\end{table}
+\begin{table}[t]\centering\caption{Misrouted test inputs (true$\to$predicted) and the PSNR lost relative to oracle routing.}\label{tab:misroute}
+\begin{tabular}{lcc}\toprule Error & Count & Mean PSNR drop (dB)\\\midrule
+occlusion$\rightarrow$clean & 53 & -2.29\\
+clean$\rightarrow$blur & 51 & 74.21\\
+blur$\rightarrow$clean & 5 & -6.71\\
+clean$\rightarrow$occlusion & 2 & 85.22\\
+occlusion$\rightarrow$blur & 2 & 2.13\\
+S\&P$\rightarrow$clean & 1 & -1.96\\
+\bottomrule\end{tabular}\end{table}

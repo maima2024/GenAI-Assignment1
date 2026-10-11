@@ -1,0 +1,14 @@
+artifact_uri: file:///mlruns/349925230999480618/6bd4aebb38d74256b7c7ba7811270157/artifacts
+end_time: 1791117156310
+entry_point_name: ''
+experiment_id: '349925230999480618'
+lifecycle_stage: active
+run_id: 6bd4aebb38d74256b7c7ba7811270157
+run_name: specialist_occlusion
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791116769427
+status: 3
+tags: []
+user_id: root

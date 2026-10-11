@@ -1,0 +1,8 @@
+{
+  "file": "face2sketch_generator.onnx",
+  "max_abs_diff": {
+    "sketch": 8.940696716308594e-07
+  },
+  "size_mb": 42.445246,
+  "consistent": true
+}

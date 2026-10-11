@@ -1,0 +1,35 @@
+{
+  "classifier": {
+    "file": "classifier.onnx",
+    "max_abs_diff": {
+      "logits": 4.76837158203125e-07,
+      "probs": 7.450580596923828e-09
+    },
+    "size_mb": 2.65003,
+    "consistent": true
+  },
+  "saltpepper": {
+    "file": "specialist_saltpepper.onnx",
+    "max_abs_diff": {
+      "output": 6.556510925292969e-07
+    },
+    "size_mb": 27.504491,
+    "consistent": true
+  },
+  "blur": {
+    "file": "specialist_blur.onnx",
+    "max_abs_diff": {
+      "output": 7.748603820800781e-07
+    },
+    "size_mb": 27.504491,
+    "consistent": true
+  },
+  "occlusion": {
+    "file": "specialist_occlusion.onnx",
+    "max_abs_diff": {
+      "output": 1.430511474609375e-06
+    },
+    "size_mb": 27.504491,
+    "consistent": true
+  }
+}

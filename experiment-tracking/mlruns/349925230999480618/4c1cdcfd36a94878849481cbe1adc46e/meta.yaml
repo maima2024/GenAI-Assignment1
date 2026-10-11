@@ -1,0 +1,14 @@
+artifact_uri: file:///mlruns/349925230999480618/4c1cdcfd36a94878849481cbe1adc46e/artifacts
+end_time: 1791116380767
+entry_point_name: ''
+experiment_id: '349925230999480618'
+lifecycle_stage: active
+run_id: 4c1cdcfd36a94878849481cbe1adc46e
+run_name: specialist_saltpepper
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791115993388
+status: 3
+tags: []
+user_id: root

@@ -1,0 +1,14 @@
+artifact_uri: file:///mlruns/349925230999480618/049e8ec285dd43c495ef3394bce9c0c1/artifacts
+end_time: 1791115409149
+entry_point_name: ''
+experiment_id: '349925230999480618'
+lifecycle_stage: active
+run_id: 049e8ec285dd43c495ef3394bce9c0c1
+run_name: clf_trial_8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791115397521
+status: 4
+tags: []
+user_id: root

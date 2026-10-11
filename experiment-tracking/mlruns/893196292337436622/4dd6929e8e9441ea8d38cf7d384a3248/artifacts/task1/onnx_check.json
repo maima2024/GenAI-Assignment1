@@ -1,0 +1,8 @@
+{
+  "file": "udae.onnx",
+  "max_abs_diff": {
+    "output": 6.556510925292969e-07
+  },
+  "size_mb": 27.504491,
+  "consistent": true
+}

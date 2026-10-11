@@ -1,0 +1,16 @@
+{
+  "n_trials": 10,
+  "states": {
+    "COMPLETE": 7,
+    "PRUNED": 3
+  },
+  "best_value": 0.49879471957683563,
+  "best_params": {
+    "lr": 0.0012721779512567337,
+    "batch_size": 16,
+    "latent_ch": 16,
+    "base": 48,
+    "alpha": 0.5108758812412451
+  },
+  "best_trial": 6
+}

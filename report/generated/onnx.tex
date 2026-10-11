@@ -1,0 +1,10 @@
+\begin{table}[t]\centering\caption{ONNX export check: maximum absolute difference between PyTorch and ONNX Runtime outputs on a random input.}\label{tab:onnx}
+\setlength{\tabcolsep}{3pt}\begin{tabular}{lcc}\toprule Model & Size (MB) & max $|\Delta|$\\\midrule
+udae.onnx & 27.5 & 6.6e-07\\
+classifier.onnx & 2.7 & 4.8e-07\\
+specialist\_saltpepper.onnx & 27.5 & 6.6e-07\\
+specialist\_blur.onnx & 27.5 & 7.7e-07\\
+specialist\_occlusion.onnx & 27.5 & 1.4e-06\\
+soft\_moe.onnx & 85.2 & 4.8e-07\\
+face2sketch\_generator.onnx & 42.4 & 8.9e-07\\
+\bottomrule\end{tabular}\end{table}

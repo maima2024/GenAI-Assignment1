@@ -1,0 +1,14 @@
+artifact_uri: file:///mlruns/893196292337436622/cc66c02fe8c5458db3b5b21eebdc501c/artifacts
+end_time: 1791115115849
+entry_point_name: ''
+experiment_id: '893196292337436622'
+lifecycle_stage: active
+run_id: cc66c02fe8c5458db3b5b21eebdc501c
+run_name: t1_final_training
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791114599720
+status: 3
+tags: []
+user_id: root

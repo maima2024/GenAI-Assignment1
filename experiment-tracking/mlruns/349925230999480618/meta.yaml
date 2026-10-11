@@ -1,0 +1,9 @@
+artifact_location: file:///mlruns/349925230999480618
+creation_time: 1791115221936
+effective_trace_archival_retention: null
+experiment_id: '349925230999480618'
+last_update_time: 1791115221936
+lifecycle_stage: active
+name: task2_hard_routing
+trace_location: null
+workspace: default

@@ -1,0 +1,17 @@
+\begin{table}[t]\centering\caption{Corruption classifier on the deterministic test manifest (accuracy 99.69\%, macro-F1 0.9949).}\label{tab:clf}
+\begin{tabular}{lcccc}\toprule Class & Precision & Recall & F1 & Support\\\midrule
+Clean & 0.9839 & 0.9856 & 0.9847 & 3669\\
+Salt \& pepper & 1.0000 & 0.9999 & 1.0000 & 11007\\
+Blur & 0.9952 & 0.9995 & 0.9974 & 11007\\
+Occlusion & 0.9998 & 0.9950 & 0.9974 & 11007\\
+\midrule Macro avg & 0.9947 & 0.9950 & 0.9949 & --\\
+Validation & 0.9959 & 0.9959 & 0.9959 & acc 99.59\%\\
+\bottomrule\end{tabular}\end{table}
+
+\begin{table}[t]\centering\caption{Classifier accuracy per corruption and severity (test).}\label{tab:clfsev}
+\begin{tabular}{lccc}\toprule & Low & Medium & High\\\midrule
+Clean & \multicolumn{3}{c}{98.56\%}\\
+Salt \& pepper & 99.97\% & 100.00\% & 100.00\%\\
+Blur & 99.86\% & 100.00\% & 100.00\%\\
+Occlusion & 98.56\% & 99.95\% & 100.00\%\\
+\bottomrule\end{tabular}\end{table}

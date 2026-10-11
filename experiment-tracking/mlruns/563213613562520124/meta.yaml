@@ -1,0 +1,9 @@
+artifact_location: file:///mlruns/563213613562520124
+creation_time: 1791114423267
+effective_trace_archival_retention: null
+experiment_id: '563213613562520124'
+last_update_time: 1791114423267
+lifecycle_stage: active
+name: task4_face2sketch_cgan
+trace_location: null
+workspace: default

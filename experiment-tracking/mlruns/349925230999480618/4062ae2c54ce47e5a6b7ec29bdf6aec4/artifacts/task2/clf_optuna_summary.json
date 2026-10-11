@@ -1,0 +1,16 @@
+{
+  "n_trials": 10,
+  "states": {
+    "COMPLETE": 5,
+    "PRUNED": 5
+  },
+  "best_value": 0.009526081377067008,
+  "best_params": {
+    "lr": 0.00043284502212938834,
+    "batch_size": 32,
+    "channels": "24-48-96-192",
+    "dropout": 0.3005575058716044,
+    "weight_decay": 0.0006796578090758161
+  },
+  "best_trial": 0
+}

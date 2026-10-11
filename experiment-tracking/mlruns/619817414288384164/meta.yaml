@@ -1,0 +1,9 @@
+artifact_location: file:///mlruns/619817414288384164
+creation_time: 1791117350265
+effective_trace_archival_retention: null
+experiment_id: '619817414288384164'
+last_update_time: 1791117350265
+lifecycle_stage: active
+name: task3_soft_moe
+trace_location: null
+workspace: default

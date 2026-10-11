@@ -1,0 +1,25 @@
+{
+  "n_trials": 12,
+  "states": {
+    "COMPLETE": 9,
+    "PRUNED": 3
+  },
+  "best_value": 0.47891703993082047,
+  "best_params": {
+    "lr": 0.00018861950443028856,
+    "batch_size": 16,
+    "latent_ch": 16,
+    "base": 48,
+    "dropout": 0.002085639159357211,
+    "alpha": 0.7298362861599046
+  },
+  "best_trial": 9,
+  "search_space": {
+    "lr": "(0.0001, 0.003)",
+    "batch_size": "[16, 32, 64]",
+    "latent_ch": "[16, 32, 64, 128]",
+    "base": "[16, 32, 48]",
+    "dropout": "(0.0, 0.3)",
+    "alpha": "(0.5, 0.95)"
+  }
+}

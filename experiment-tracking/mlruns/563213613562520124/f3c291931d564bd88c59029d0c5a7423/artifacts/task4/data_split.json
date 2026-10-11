@@ -1,0 +1,20 @@
+{
+  "n_train": 899,
+  "n_val": 159,
+  "n_test": 1046,
+  "train_style_counts": [
+    303,
+    298,
+    298
+  ],
+  "val_style_counts": [
+    54,
+    52,
+    53
+  ],
+  "test_style_counts": [
+    619,
+    381,
+    46
+  ]
+}

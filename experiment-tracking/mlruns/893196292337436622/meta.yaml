@@ -1,0 +1,9 @@
+artifact_location: file:///mlruns/893196292337436622
+creation_time: 1791113884258
+effective_trace_archival_retention: null
+experiment_id: '893196292337436622'
+last_update_time: 1791113884258
+lifecycle_stage: active
+name: task1_universal_dae
+trace_location: null
+workspace: default

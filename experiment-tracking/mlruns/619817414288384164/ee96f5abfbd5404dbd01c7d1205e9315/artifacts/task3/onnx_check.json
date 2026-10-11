@@ -1,0 +1,10 @@
+{
+  "file": "soft_moe.onnx",
+  "max_abs_diff": {
+    "output": 2.086162567138672e-07,
+    "weights": 5.960464477539063e-08,
+    "logits": 4.76837158203125e-07
+  },
+  "size_mb": 85.172519,
+  "consistent": true
+}

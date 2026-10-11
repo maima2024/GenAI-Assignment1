@@ -1,0 +1,14 @@
+artifact_uri: file:///mlruns/619817414288384164/ba70e199edce4c96866a05e22ad467de/artifacts
+end_time: 1791117621595
+entry_point_name: ''
+experiment_id: '619817414288384164'
+lifecycle_stage: active
+run_id: ba70e199edce4c96866a05e22ad467de
+run_name: moe_trial_2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791117532751
+status: 3
+tags: []
+user_id: root

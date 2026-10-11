@@ -1,0 +1,14 @@
+artifact_uri: file:///mlruns/349925230999480618/7534a778a65c4dea8b7203696a16f1da/artifacts
+end_time: 1791116769301
+entry_point_name: ''
+experiment_id: '349925230999480618'
+lifecycle_stage: active
+run_id: 7534a778a65c4dea8b7203696a16f1da
+run_name: specialist_blur
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791116380891
+status: 3
+tags: []
+user_id: root

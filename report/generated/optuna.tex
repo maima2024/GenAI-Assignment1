@@ -1,0 +1,9 @@
+\begin{table*}[t]\centering\caption{Optuna studies (TPE sampler, median pruner). Objective is minimised: val.~L1\,+\,(1$-$SSIM) for reconstruction tasks, 1$-$macro-F1 for the classifier.}\label{tab:optuna}
+\small\begin{tabular}{lcccp{10.2cm}}\toprule
+Study & Trials & Complete/Pruned & Best obj. & Best configuration\\\midrule
+T1 UDAE & 12 & 9/3 & 0.4789 & lr=0.000189, batch\_size=16, latent\_ch=16, base=48, dropout=0.00209, alpha=0.73\\
+T2 classifier & 10 & 5/5 & 0.0095 & lr=0.000433, batch\_size=32, channels=24-48-96-192, dropout=0.301, weight\_decay=0.00068\\
+T2 specialists & 10 & 7/3 & 0.4988 & lr=0.00127, batch\_size=16, latent\_ch=16, base=48, alpha=0.511\\
+T3 soft MoE & 8 & 7/1 & 0.2017 & lr=0.000135, tau=2.19, lc=0.0198, lb=0.0488, l1=0.572\\
+T4 cGAN & 10 & 5/5 & 0.5602 & lr\_g=0.000418, lr\_d=0.000232, batch\_size=16, base=32, dropout=0.222, emb\_dim=32, lambda\_l1=87.5\\
+\bottomrule\end{tabular}\end{table*}

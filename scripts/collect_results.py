@@ -163,7 +163,7 @@ def routing_table(r):
         lines += [r"\begin{table}[t]\centering\caption{Misrouted test inputs (true$\to$predicted) and the PSNR lost relative to oracle routing.}\label{tab:misroute}",
                   r"\begin{tabular}{lcc}\toprule Error & Count & Mean PSNR drop (dB)\\\midrule"]
         for k, v in sorted(mis.items(), key=lambda kv: -kv[1]["count"]):
-            lines.append(f"{k.replace('saltpepper', 'S&P').replace('&', chr(92) + '&')} & {v['count']} & {v['mean_psnr_drop']:.2f}\\\\")
+            lines.append(f"{k.replace('saltpepper', 'S&P').replace('&', chr(92) + '&').replace('->', '$\\rightarrow$')} & {v['count']} & {v['mean_psnr_drop']:.2f}\\\\")
         lines += [r"\bottomrule\end{tabular}\end{table}"]
     return "\n".join(lines)
 
