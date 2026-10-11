@@ -281,10 +281,15 @@ $\mathcal{L}_D=\mathrm{BCE}(D(x,y,s),0.9)+\mathrm{BCE}(D(x,G(x,s),s),0)$ (one-si
 \caption{Deployment architecture.}\label{fig:sys}
 \end{figure}
 
-\begin{figure}[t]\centering
-\figif{stitch_design.png}
-\caption{Original Google Stitch design of the application.}\label{fig:stitch}
-\end{figure}
+\textbf{From Stitch design to implementation.} Fig.~\ref{fig:stitch} shows the original Stitch screens, generated from the prompts in \texttt{docs/google\_stitch\_prompts.md} (all screens are in \texttt{docs/stitch/}). The implementation kept the structure of the design: a fixed sidebar with one entry per task plus a status page and a backend-health card, a control column (upload area, sample grid, corruption tiles, severity segmented control, seed and action button) beside a three-panel \emph{clean / input / output} comparison, metric tiles for inference time, PSNR and SSIM, per-class probability bars with an explicit \emph{executed}/\emph{skipped} route list for hard routing, and per-branch weight bars plus a stacked contribution bar for the soft MoE. It also kept the dark palette with one fixed colour per branch (grey identity, amber salt-and-pepper, blue blur, green occlusion), so a branch has the same colour in every workspace. Stitch filled the mock-ups with invented values (512$\times$512 inputs, CUDA/TensorRT, ResNet-18, model sizes and a gate-temperature slider). The implementation replaces all of them with real system information, i.e.\ 128$\times$128 inputs, CPU ONNX Runtime, the actual ONNX signatures and sizes, and the fixed trained $\tau$. Decorative elements that have no backing data (cluster name, uptime, latency sparkline) were dropped.
+
+\begin{figure*}[t]\centering
+\figif[0.245\textwidth]{stitch_universal.jpg}\hfill
+\figif[0.245\textwidth]{stitch_hard.jpg}\hfill
+\figif[0.245\textwidth]{stitch_soft.jpg}\hfill
+\figif[0.245\textwidth]{stitch_status.jpg}
+\caption{Original Google Stitch design (evidence): Universal Restoration, Hard-Routed Restoration, Soft Mixture-of-Experts Restoration and System Status screens. Numbers shown are Stitch placeholders, not results.}\label{fig:stitch}
+\end{figure*}
 
 \begin{figure*}[t]\centering
 \figif[0.49\textwidth]{app_hard.png}\hfill
@@ -315,7 +320,8 @@ Under identical data and test conditions, the three restoration designs behave v
 In line with the assignment policy, the following AI tools were used:
 \begin{itemize}
 \item \textbf{Claude (Anthropic), via the Claude desktop app}: used as a coding assistant to draft the training/evaluation code, the FastAPI backend, the React front end, the Docker configuration, the diagram script and an initial draft of this report from the assignment specification and from my design decisions.
-\item \textbf{Google Stitch}: used, as required, to produce the initial UI design.
+\item \textbf{Google Stitch}: used, as required, to produce the initial UI design (Fig.~\ref{fig:stitch}).
+\item \textbf{Claude, final review}: before submission, used to audit the repository against the brief. It ran the backend with the trained ONNX models against every endpoint (valid and invalid inputs), built the front end, fixed a rendering error in Table~VII, inserted the Stitch evidence and wrote the paragraph comparing it with the implementation, which I checked against the front-end code.
 \end{itemize}
 \textbf{Verification.} Every component was executed end-to-end: the whole pipeline (all four tasks) was first run in a reduced ``smoke'' configuration on CPU to catch shape, data and export errors; ONNX outputs were compared numerically with PyTorch (Table~\ref{tab:onnx}); the backend endpoints were exercised with valid and invalid uploads (e.g.\ non-image files return HTTP 415); the front end was built and checked in a browser against the running backend. Issues found and corrected during this process included: MLflow~3 refusing the file-based tracking store (fixed by an explicit opt-in so runs can be zipped and served offline), the need for an $\alpha$-independent Optuna objective, freezing expert batch-norm statistics during joint MoE training, and per-worker RNG seeding so that DataLoader workers do not generate identical corruptions. All reported numbers come from the logged runs, not from the assistant. I am responsible for the submitted work and can explain and modify any part of it.
 

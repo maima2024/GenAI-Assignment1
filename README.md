@@ -63,7 +63,7 @@ backend/                  FastAPI app (ONNX Runtime) + Dockerfile
 frontend/                 React + Tailwind (Vite) app + nginx Dockerfile
 experiment-tracking/      MLflow runs (file store) + MLflow UI Dockerfile
 report/                   IEEE LaTeX report (main.tex) and figures
-docs/                     Google Stitch prompts/design evidence, demo-video script
+docs/                     Google Stitch prompts + original Stitch screens (docs/stitch/), demo-video script
 docker-compose.yml
 ```
 
